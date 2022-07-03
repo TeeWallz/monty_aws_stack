@@ -1,0 +1,89 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+Parameters:
+  LambdaExecutionRole:
+    Type: String
+    Default: monty-lambda-execution-role
+  StagingBucketName:
+    Type: String
+  WebsiteBucketName:
+    Type: String
+  ChumBucketName:
+    Type: String
+
+Resources:
+  MontyChumBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref ChumBucketName
+
+  MontyStagingBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref StagingBucketName
+
+  MontyWebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref WebsiteBucketName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+
+  BucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      PolicyDocument:
+        Id: MyPolicy
+        Version: 2012-10-17
+        Statement:
+          - Sid: PublicReadForGetBucketObjects
+            Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Join 
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref MontyWebsiteBucket
+                - /*
+            # Condition:
+              #   StringLike:
+              #     'aws:Referer':
+              #       - 'http://www.example.com/*'
+              #       - 'http://example.net/*'
+      Bucket: !Ref MontyWebsiteBucket
+
+  MontyLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSLambda_FullAccess
+      RoleName: !Ref LambdaExecutionRole
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - apigateway.amazonaws.com
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+Outputs:
+  MontyWebsiteUrl:
+    Description: Monty website URL.
+    Value: !GetAtt MontyWebsiteBucket.WebsiteURL
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-website-url"
+
+  MontyLambdaExecutionRoleArn:
+    Description: Monty lambda execution role arn.
+    Value: !GetAtt MontyLambdaExecutionRole.Arn
+    Export:
+      Name:
+        Fn::Sub: "${AWS::StackName}-lambda-execution-role-arn"
