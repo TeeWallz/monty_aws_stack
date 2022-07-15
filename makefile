@@ -1,11 +1,19 @@
 SHELL := /bin/bash
 include ./config.mk
+include ./config_secrets.mk
 
-TODOMVC_FRONTEND_URL = $(shell aws cloudformation describe-stacks --stack-name $(AWS_STACK_NAME_BASE) | jq '.Stacks[0].Outputs[1].OutputValue')
-TODOMVC_BACKEND_URL = $(shell aws cloudformation describe-stacks --stack-name $(AWS_STACK_NAME_BACKEND) | jq '.Stacks[0].Outputs[0].OutputValue')
+MONTY_FRONTEND_URL = $(shell aws cloudformation describe-stacks --stack-name $(AWS_STACK_NAME_BASE) | jq '.Stacks[0].Outputs[1].OutputValue')
+MONTY_BACKEND_URL = $(shell aws cloudformation describe-stacks --stack-name $(AWS_STACK_NAME_BACKEND) | jq '.Stacks[0].Outputs[1].OutputValue')
+MONTY_BACKEND_URL_BASE = $(shell echo $(MONTY_BACKEND_URL) | sed -r 's/https:\/\/(.+)\/.+/\1/g')
+BACKEND_CLOUDFLARE_ID = $(shell make cloudflare-dns-list-api-data)
+
+CLOUDFLARE_TOKEN = $(shell source "./aws_utils.sh" && get_ssm_param "/monty/CLOUDFLARE_TOKEN")
+CLOUDFLARE_ZONE_ID = $(shell source "./aws_utils.sh" && get_ssm_param "/monty/CLOUDFLARE_ZONE_ID")
+
+
 
 build-frontend:
-	TODOMVC_BACKEND_URL=$(TODOMVC_BACKEND_URL) yarn build:frontend
+	MONTY_BACKEND_URL=$(MONTY_BACKEND_URL) yarn build:frontend
 
 build-backend:
 	# yarn build:backend
@@ -13,8 +21,8 @@ build-backend:
 	# @echo "^Do not use that last suggested command!^ Execute the following command instead:"
 	# make deploy-backend
 
-deploy-frontend:
-	aws s3 cp ./dist/frontend/ s3://$(AWS_WEBSITE_BUCKET)/ --recursive --include "*" --acl public-read
+# deploy-frontend:
+# 	aws s3 cp ./dist/frontend/ s3://$(AWS_WEBSITE_BUCKET)/ --recursive --include "*" --acl public-read
 
 deploy-backend:
 	make package-sam
@@ -44,20 +52,21 @@ deprovision-base:
 	aws cloudformation wait stack-delete-complete --stack-name $(AWS_STACK_NAME_BASE)
 
 deprovision-backend:
-	aws cloudformation delete-stack --stack-name xilution-todomvc-sam
+	aws cloudformation delete-stack --stack-name $(AWS_STACK_NAME_BACKEND)
 
-dev:
-	TODOMVC_BACKEND_URL=$(TODOMVC_BACKEND_URL) yarn dev
+dev-frontend:
+	# MONTY_BACKEND_URL=$(MONTY_BACKEND_URL) yarn dev
+	 npm run start --prefix src/frontend
 
 .ONESHELL:
 dev-backend:
 	# source /home/tom/git/home/monty_aws_fullstack/config.mk
 	FLASK_APP=./src/backend/flask_api/app.py BUCKET_NAME=$(AWS_CHUM_BUCKET) FLASK_ENV=development python -m flask run
 
-put-types:
-	mkdir -p ./temp
-	npx babel ./src/backend/* --out-dir ./temp/src/backend
-	XilutionClientId=$(XILUTION_CLIENT_ID) node ./utils/types/put-types.js
+# put-types:
+# 	mkdir -p ./temp
+# 	npx babel ./src/backend/* --out-dir ./temp/src/backend
+# 	XilutionClientId=$(XILUTION_CLIENT_ID) node ./utils/types/put-types.js
 
 provision-base:
 	aws cloudformation create-stack --stack-name $(AWS_STACK_NAME_BASE) \
@@ -84,10 +93,33 @@ describe-events-base:
         | jq -re '[.Timestamp,.LogicalResourceId,.ResourceStatusReason] | @tsv' | sort >&2
 
 show-frontend-url:
-	@echo $(TODOMVC_FRONTEND_URL)
+	@echo $(MONTY_FRONTEND_URL)
 
 show-backend-url:
-	@echo $(TODOMVC_BACKEND_URL)
+	@echo $(MONTY_BACKEND_URL)
+
+show-backend-base-url:
+	@echo $(MONTY_BACKEND_URL_BASE)
 	
 show-frontend-ssl-url:
 	@echo https://s3.$(AWS_REGION).amazonaws.com/$(AWS_WEBSITE_BUCKET)/index.html
+
+cloudflare-dns-verify-token:
+	curl -X GET "https://api.cloudflare.com/client/v4/user/tokens/verify" \
+		-H "Authorization: Bearer $(CLOUDFLARE_TOKEN)" \
+		-H "Content-Type:application/json"; echo 
+	
+cloudflare-dns-list-zones:
+	curl -X GET "https://api.cloudflare.com/client/v4/zones/$(CLOUDFLARE_ZONE_ID)/dns_records" \
+		-H "Authorization: Bearer $(CLOUDFLARE_TOKEN)" \
+		-H "Content-Type: application/json"; echo
+
+cloudflare-dns-list-api-data:
+	curl -X GET "https://api.cloudflare.com/client/v4/zones/$(CLOUDFLARE_ZONE_ID)/dns_records?name=api.howmanydayssincemontaguestreetbridgehasbeenhit.com" \
+		-H "Authorization: Bearer $(CLOUDFLARE_TOKEN)" \
+		-H "Content-Type: application/json" ; echo
+	# | jq '.result[0].id'
+
+cloudflare-dns-update-backend:
+	@echo $(shell makefile_scripts/update_backend_dns.sh)
+	

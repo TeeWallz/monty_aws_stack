@@ -1,0 +1,230 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+# https://kylebarron.dev/blog/caching-lambda-functions-cloudflare
+
+Parameters:
+  # BaseStackName:
+  #   Type: String
+  # XilutionClientId:
+  #   Type: String
+  ChumBucketName:
+    Type: String
+  Stage:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - prod
+
+Globals:
+  Function:
+    Timeout: 10
+  Api:
+    Cors:
+        AllowMethods: "'GET,POST,OPTIONS'"
+        AllowHeaders: "'content-type'"
+        AllowOrigin: "'*'"
+Resources:
+  MontyApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../dist/backend/
+      Handler: app.app
+      Runtime: python3.9
+      Environment:
+        Variables:
+          # TABLE_NAME: !Ref MontyChumpTableName
+          BUCKET_NAME: !Ref ChumBucketName
+          # REGION_NAME: !Ref AWS::Region
+          # EXEC_ENV: !Ref ExecEnv
+      Policies:
+        # - DynamoDBCrudPolicy:
+        #     TableName: !Ref MontyChumpTable
+        - S3CrudPolicy:
+            BucketName: !Ref ChumBucketName
+      Events:
+        Index:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
+            RestApiId: !Ref ApiGatewayApi
+        UpdateChumps:
+          Type: Api
+          Properties:
+            Path: /update
+            Method: post
+            # RestApiId: !Ref ApiGatewayApi
+  ApiGatewayApi:
+    Type: 'AWS::ApiGatewayV2::Api'
+    Properties:
+      StageName: !Ref Stage
+      # Domain:
+      #   DomainName: api.howmanydayssincemontaguestreetbridgehasbeenhit.com
+      #   CertificateArn: arn:aws:acm:ap-southeast-2:474457287269:certificate/2dafae99-f9e1-49e0-ba25-f463f53b4145
+
+  DomainName:
+    Type: 'AWS::ApiGatewayV2::DomainName'
+    Properties:
+      DomainName: api.howmanydayssincemontaguestreetbridgehasbeenhit.com
+      DomainNameConfigurations:
+        - EndpointType: REGIONAL
+          CertificateArn: >-
+            arn:aws:acm:ap-southeast-2:474457287269:certificate/2dafae99-f9e1-49e0-ba25-f463f53b4145
+          CertificateName: testCertificate
+
+
+  ApiDomainMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    Properties:
+      ApiId: !Ref ApiGatewayApi
+      Stage: dev  # unless a different StageName is used in Api
+      DomainName: api.howmanydayssincemontaguestreetbridgehasbeenhit.com
+
+Outputs:
+  # ApiDeployment:
+  #   Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+  #   Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}"
+  HelloWorldFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt MontyApiFunction.Arn
+  HelloWorldFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt MontyApiFunction.Arn
+  RegionalDomainName:
+    Value: !GetAtt 
+      - DomainName
+      - RegionalDomainName
+
+
+
+# Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  # ApiURL:
+  #   Description: API endpoint URL for Monty
+  #   Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+  # MontyApiFunction:
+  #   Description: "Lots Of Lists Lambda Function ARN"
+  #   Value: !GetAtt MontyApiFunction.Arn
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Resources:
+#   AuthenticateFunction:
+#     Type: AWS::Serverless::Function
+#     Properties:
+#       FunctionName: xilution-todomvc-authenticate-function
+#       CodeUri: ../../dist/backend/
+#       Handler: index.doAuthenticate
+#       Role:
+#         Fn::ImportValue:
+#           Fn::Sub: "${BaseStackName}-lambda-execution-role-arn"
+#       Events:
+#         PostResource:
+#           Type: Api
+#           Properties:
+#             Path: /authenticate
+#             Method: post
+
+#   FetchTodosFunction:
+#     Type: AWS::Serverless::Function
+#     Properties:
+#       FunctionName: xilution-todomvc-fetch-todos-function
+#       CodeUri: ../../dist/backend/
+#       Handler: index.doFetchTodos
+#       Role:
+#         Fn::ImportValue:
+#           Fn::Sub: "${BaseStackName}-lambda-execution-role-arn"
+#       Events:
+#         PostResource:
+#           Type: Api
+#           Properties:
+#             Path: /todos
+#             Method: get
+
+#   PostTodoFunction:
+#     Type: AWS::Serverless::Function
+#     Properties:
+#       FunctionName: xilution-todomvc-post-todo-function
+#       CodeUri: ../../dist/backend/
+#       Handler: index.doPostTodo
+#       Role:
+#         Fn::ImportValue:
+#           Fn::Sub: "${BaseStackName}-lambda-execution-role-arn"
+#       Events:
+#         PostResource:
+#           Type: Api
+#           Properties:
+#             Path: /todos
+#             Method: post
+
+#   PutTodoFunction:
+#     Type: AWS::Serverless::Function
+#     Properties:
+#       FunctionName: xilution-todomvc-put-todo-function
+#       CodeUri: ../../dist/backend/
+#       Handler: index.doPutTodo
+#       Role:
+#         Fn::ImportValue:
+#           Fn::Sub: "${BaseStackName}-lambda-execution-role-arn"
+#       Events:
+#         PostResource:
+#           Type: Api
+#           Properties:
+#             Path: /todos/{id}
+#             Method: put
+
+#   GetTodoFunction:
+#     Type: AWS::Serverless::Function
+#     Properties:
+#       FunctionName: xilution-todomvc-get-todo-function
+#       CodeUri: ../../dist/backend/
+#       Handler: index.doGetTodo
+#       Role:
+#         Fn::ImportValue:
+#           Fn::Sub: "${BaseStackName}-lambda-execution-role-arn"
+#       Events:
+#         PostResource:
+#           Type: Api
+#           Properties:
+#             Path: /todos/{id}
+#             Method: get
+
+#   DeleteTodoFunction:
+#     Type: AWS::Serverless::Function
+#     Properties:
+#       FunctionName: xilution-todomvc-delete-todo-function
+#       CodeUri: ../../dist/backend/
+#       Handler: index.doDeleteTodo
+#       Role:
+#         Fn::ImportValue:
+#           Fn::Sub: "${BaseStackName}-lambda-execution-role-arn"
+#       Events:
+#         PostResource:
+#           Type: Api
+#           Properties:
+#             Path: /todos/{id}
+#             Method: delete
+
+# Outputs:
+#   ApiURL:
+#     Description: API endpoint URL for Xilution todo MVC example.
+#     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
