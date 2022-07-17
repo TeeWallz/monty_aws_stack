@@ -33,9 +33,10 @@ const frontPageStyle = theme => ({
 class FrontPage extends Component {
     constructor(props) {
         super(props);
+        console.log(props)
         this.setLightboxData = this.setLightboxData.bind(this);
         this.lightboxTitle = this.lightboxTitle.bind(this);
-        this.chumps = Chumps()
+        this.chumps = props.chumps
 
         this.state = {
             lightboxCurrentChumpId : 0,
@@ -66,7 +67,7 @@ class FrontPage extends Component {
 
     render() {
         const {classes} = this.props;
-        console.log(process.env)
+        
         return (
             <React.Fragment>
                 

@@ -6,3 +6,4 @@ coverage
 bootstrap.js
 config_secrets.mk
 build/
+__pycache__/

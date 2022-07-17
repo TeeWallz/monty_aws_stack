@@ -8,6 +8,7 @@ from boto3.dynamodb.conditions import Key
 import time
 from flask import request, jsonify
 from flask_lambda import FlaskLambda
+from flask_cors import CORS, cross_origin
 
 response = {'data': {}, 'message': ""}
 DEFAULT_DATE = '1999-01-01'
@@ -23,6 +24,8 @@ ssm = boto3.client('ssm')
 s3_client = boto3.client("s3")
 
 app = FlaskLambda(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 # if EXEC_ENV == 'local':
 #     dynamodb = boto3.resource('dynamodb', endpoint_url='http://dynamodb:8000')
@@ -69,6 +72,7 @@ def get_chumps(date_filter):
     return get_chumps_s3(date_filter)
 
 @app.route('/')
+@cross_origin()
 def index():
     error_message = ""
 
