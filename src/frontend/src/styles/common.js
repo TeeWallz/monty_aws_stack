@@ -54,6 +54,52 @@ const commonStyle = theme => ({
             fontSize: '1em',
         },
     },
+
+    sectionWidth: {
+        maxWidth: '600px',
+        width: '100%',
+        [theme.breakpoints.up('xs')]: {
+            marginLeft: '10px',
+            marginRight: '10px',
+        },
+        [theme.breakpoints.up('md')]: {
+            'marginLeft': 'auto',
+            'marginRight': 'auto',
+
+        },
+    },
+
+    edit_container: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'nowrap',
+        justifyContent: 'normal',
+        alignItems: 'normal',
+        alignContent: 'normal',
+        width:'100%',
+
+
+
+      },
+      flex_item1: {
+        display: 'block',
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: 'auto',
+        alignSelf: 'auto',
+        order: 0,
+      },
+      
+      flex_item2: {
+        display: 'block',
+        flexGrow: 9,
+        flexShrink: 1,
+        flexBasis: 'auto',
+        alignSelf: 'auto',
+        order: 0,
+      }
+
+
 });
 export default commonStyle;
 

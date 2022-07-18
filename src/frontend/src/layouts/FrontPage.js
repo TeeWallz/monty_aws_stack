@@ -17,6 +17,7 @@ import LightboxExample from "../components/lightbox/Lightbox";
 import Chumps from "../data/chumps";
 import Links from "../components/social/Links";
 import ContactMe from "../components/social/ContactMe";
+import Footer from "../components/common/layout/Footer";
 
 const frontPageStyle = theme => ({
     header: {
@@ -87,6 +88,7 @@ class FrontPage extends Component {
                 <Links />
                 <ContactMe />
                 <CommentsContainer />
+                <Footer />
             </React.Fragment>
 
         )

@@ -141,7 +141,7 @@ const MainLayout = (props) => {
                     </>
                 }
 
-                <Footer />
+                
             </div>
             {/*<Footer />*/}
         </div>
