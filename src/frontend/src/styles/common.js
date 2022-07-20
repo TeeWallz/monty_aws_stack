@@ -88,6 +88,7 @@ const commonStyle = theme => ({
         flexBasis: 'auto',
         alignSelf: 'auto',
         order: 0,
+        margin: '0.5rem'
       },
       
       flex_item2: {
