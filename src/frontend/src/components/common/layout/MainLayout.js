@@ -91,14 +91,14 @@ const MainLayout = (props) => {
     }, []);
 
     function renderChumps() {
-        console.log(process.env.REACT_APP_API_URL);
+        console.log(process.env.REACT_APP_JSON_URL);
 
-        fetch(process.env.REACT_APP_API_URL)
+        fetch(process.env.REACT_APP_JSON_URL)
             .then((response) => response.json())
             .then((responseJson) => {
                 //   this.setState({ data : responseJson })
                 console.log(responseJson)
-                setChumps(responseJson.data)
+                setChumps(responseJson)
             })
             .catch((error) => {
                 console.error(error);

@@ -34,6 +34,15 @@ const frontPageStyle = theme => ({
 
 });
 
+const getBase64 = (file) => {
+    return new Promise((resolve,reject) => {
+       const reader = new FileReader();
+       reader.onload = () => resolve(reader.result);
+       reader.onerror = error => reject(error);
+       reader.readAsDataURL(file);
+    });
+  }
+
 class FrontPage extends Component {
     constructor(props) {
         super(props);
@@ -44,9 +53,14 @@ class FrontPage extends Component {
         this.state = {
             chumps_array: props.props.chumps,
             chumps_dict: chumps_dict,
+            chumps_changes: {},
             selectedDate: props.props.chumps[0].date
         }
     }
+
+    // componentDidMount = () => {
+    //     var $this = $(ReactDOM.findDOMNode(this));
+    // }
 
     onBoutListClick = (e) => {
         console.log(this.state.chumps_dict[e.target.value])
@@ -55,9 +69,51 @@ class FrontPage extends Component {
         });
     }
 
+    addChumpChange = (field, value) => {
+        // Is date in changes object? If not add it
+        let current_changes = this.state.chumps_changes;
+
+        if(!(this.state.selectedDate in current_changes)){
+            current_changes[this.state.selectedDate] = {}
+        }
+        current_changes[this.state.selectedDate][field] = value
+        
+        this.setState({
+            chumps_changes: current_changes
+        });
+    }
+
+    getFieldValue = (date, field) => {
+        // Assume no change at first
+        let return_obj = {'modified': false, value: this.state.chumps_dict[date][field]}
+
+        if(this.state.selectedDate in this.state.chumps_changes){
+            if(field in this.state.chumps_changes[date]){
+                // If change exists for day and field, return it
+                return_obj.modified = true;
+                return_obj.value = this.state.chumps_changes[date][field];
+            }
+        }
+        return return_obj;   
+    }
+
+    imageUpload = (e) => {
+        const file = e.target.files[0];
+        console.log(file)
+        let test = getBase64(file)
+        console.log(test)
+        getBase64(file).then(base64 => {
+            this.addChumpChange('image', base64)
+            console.log("file stored",base64);
+        });
+    }
 
     render() {
         const { classes } = this.props;
+
+        let display_image = this.getFieldValue(this.state.selectedDate, 'image')
+        let display_thanks = this.getFieldValue(this.state.selectedDate, 'thanks')
+        
 
         return (
             <React.Fragment>
@@ -67,11 +123,18 @@ class FrontPage extends Component {
                     </div>
                     <div className={classNames(classes.edit_container)}>
                         <div className={classNames(classes.flex_item1)}>
-                            <select name="bouts" size="20" class="form-control" onChange={this.onBoutListClick}>
+                            <select name="bouts" size="20" class="form-control" onChange={this.onBoutListClick} defaultValue={this.props.props.chumps[0].date}>
                                 {
                                     this.props.props.chumps.map((entry) => {
+                                        let display_date = entry.date;
+
+                                        if(entry.date in this.state.chumps_changes){
+                                            display_date += "*"
+                                        }
+
+
                                         return (
-                                            <option value={entry.date}> {entry.date} </option>
+                                            <option value={entry.date}> {display_date} </option>
                                         );
                                     })
                                 }
@@ -81,28 +144,34 @@ class FrontPage extends Component {
                         <div className={classNames(classes.flex_item2)}>
                             <div class="rendered-form">
                                 <div class="formbuilder-date form-group field-date-1658316014847">
-                                    <label for="date-1658316014847" class="formbuilder-date-label">Bout Date<span class="formbuilder-required">*</span></label>
+                                    <label for="date-1658316014847" class="formbuilder-date-label">Bout Date</label>
                                     <input type="date" class="form-control" name="bout_date"
                                         access="false" id="date-1658316014847" required="required"
                                         aria-required="true" value={this.state.selectedDate} />
                                 </div>
                                 <div class="formbuilder-text form-group field-text-1658315931444">
-                                    <label for="text-1658315931444" class="formbuilder-text-label">Thanks<span class="formbuilder-required">*</span></label>
+                                    <label for="text-1658315931444" class="formbuilder-text-label">Thanks {  display_thanks.modified ? <>*</> : <></> }</label>
                                     <input type="text" class="form-control" name="text-1658315931444"
                                         access="false" id="text-1658315931444" required="required" aria-required="true"
-                                        value={this.state.chumps_dict[this.state.selectedDate].thanks} />
+                                        value={display_thanks.value}
+                                        onChange={(e) => { this.addChumpChange('thanks', e.target.value);}}
+                                        
+                                        />
                                 </div>
                                 <div class="formbuilder-file form-group field-file-1658316344757">
-                                    <label for="file-1658316344757" class="formbuilder-file-label">Image<span class="formbuilder-required">*</span></label>
-                                    <input type="file" class="form-control" name="file-1658316344757" access="false" multiple="false" id="file-1658316344757" required="required" aria-required="true" />
+                                    <label for="file-1658316344757" class="formbuilder-file-label">
+                                        Image {  display_image.modified ? <>*</> : <></> }
+                                    </label>
+                                    <input  type="file" class="form-control" name="file-1658316344757" access="false"
+                                            multiple id="file-1658316344757" required="required" aria-required="true" 
+                                            onChange={this.imageUpload} 
+                                    />
                                 </div>
-                                <div class="formbuilder-select form-group field-select-1658316619616">
-                                    <label for="select-1658316619616" class="formbuilder-select-label">Select</label>
-                                    <select class="form-control" name="select-1658316619616" id="select-1658316619616">
-                                        <option value="option-1" selected="true" id="select-1658316619616-0">Option 1</option>
-                                        <option value="option-2" id="select-1658316619616-1">Option 2</option>
-                                        <option value="option-3" id="select-1658316619616-2">Option 3</option>
-                                    </select>
+                                <div style={{'maxWidth': '100%', 'margin': '10px', display: 'inline'}}>
+                                    <img    style={{'width': '300px', boxShadow: '5px 10px 10px', display: 'block', margin: 'auto'}} 
+                                            src={display_image.value}
+                                    >
+                                    </img>
                                 </div>
                             </div>
                         </div>

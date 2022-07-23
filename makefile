@@ -54,6 +54,10 @@ deprovision-base:
 deprovision-backend:
 	aws cloudformation delete-stack --stack-name $(AWS_STACK_NAME_BACKEND)
 
+dev-frontend-setup:
+	cd src/frontend && npm install
+
+
 dev-frontend:
 	# MONTY_BACKEND_URL=$(MONTY_BACKEND_URL) yarn dev
 	 npm run start --prefix src/frontend
