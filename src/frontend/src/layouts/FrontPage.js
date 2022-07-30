@@ -47,7 +47,7 @@ class FrontPage extends Component {
     }
 
     lightboxTitle(idx){
-        return this.chumps[idx].date_aus_string + ' - ' + this.chumps[idx].chumps[0].name
+        return this.chumps[idx].date_aus_string + ' - ' + this.chumps[idx].chumps.name
     }
 
     setLightboxData(state) {

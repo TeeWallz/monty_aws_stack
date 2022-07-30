@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import Header from "./Header";
 import Footer from "./Footer";
 import FunnyHtmlComment from "./FunnyComment";
-import Chumps from "../../../data/chumps";
+// import Chumps from "../../../data/chumps";
 
 
 const styles = (theme) => ({
@@ -62,23 +62,23 @@ const styles = (theme) => ({
 
 });
 
-const bouts = Chumps();
-const age = bouts[0].streak;
-const date = bouts[0].date_aus_string;
-const days_str = (age == 1) ? 'day' : 'days';
-const description = `Tracking lost fights against the Montague Street Bridge. Latest bout ${age} ${days_str} ago on ${date}`;
+// const bouts = Chumps();
+// const age = bouts[0].streak;
+// const date = bouts[0].date_aus_string;
+// const days_str = (age == 1) ? 'day' : 'days';
+// const description = `Tracking lost fights against the Montague Street Bridge. Latest bout ${age} ${days_str} ago on ${date}`;
 
-const meta = {
-    title: 'How Many Days Since The Montague Street Bridge Has Been Hit?',
-    description: description,
-    canonical: 'https://howmanydayssincemontaguestreetbridgehasbeenhit.com/',
-    meta: {
-        charset: 'utf-8',
-        name: {
-            keywords: 'Montague Street Bridge how many days bus truck how many days since montague street bridge has been hit'
-        }
-    }
-}
+// const meta = {
+//     title: 'How Many Days Since The Montague Street Bridge Has Been Hit?',
+//     description: description,
+//     canonical: 'https://howmanydayssincemontaguestreetbridgehasbeenhit.com/',
+//     meta: {
+//         charset: 'utf-8',
+//         name: {
+//             keywords: 'Montague Street Bridge how many days bus truck how many days since montague street bridge has been hit'
+//         }
+//     }
+// }
 
 const MainLayout = (props) => {
     const { classes, children } = props;
@@ -98,7 +98,7 @@ const MainLayout = (props) => {
             .then((responseJson) => {
                 //   this.setState({ data : responseJson })
                 console.log(responseJson)
-                setChumps(responseJson)
+                setChumps(responseJson.chumps)
             })
             .catch((error) => {
                 console.error(error);
@@ -128,7 +128,7 @@ const MainLayout = (props) => {
 
     return (
         <div className={classes.root}>
-            <DocumentMeta {...meta} />
+            {/* <DocumentMeta {...meta} /> */}
             <div className={classes.appFrame}>
                 <Header />
                 {/* {chumps} */}

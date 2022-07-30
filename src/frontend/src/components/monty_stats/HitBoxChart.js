@@ -101,9 +101,9 @@ class HitBoxChart extends Component {
 
         return (
             <div style={localStyle.popupBox}>
-                <img src={ass.chumps[0].image} style={{width: '7em'}}/>
+                <img src={ass.chumps.image} style={{width: '7em'}}/>
                 <div>{ass.date}</div>
-                <div>{ass.chumps[0].name}</div>
+                <div>{ass.chumps.name}</div>
             </div>
         )
     }

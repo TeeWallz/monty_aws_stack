@@ -12,7 +12,7 @@ os.chdir('../')
 chumps_file_location = "src/data/chumps.json"
 with open(chumps_file_location) as f:
     chumps = json.load(f)
-last_date = chumps[0]['date_aus_string']
+last_date = chumps['date_aus_string']
 
 # Replace the bout placeholder with the latest bout
 with open('public/index_template.html', "rt") as fin:

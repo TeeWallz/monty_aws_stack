@@ -58,12 +58,12 @@ dev-frontend-setup:
 	cd src/frontend && npm install
 
 
-dev-frontend:
+frontend:
 	# MONTY_BACKEND_URL=$(MONTY_BACKEND_URL) yarn dev
 	 npm run start --prefix src/frontend
 
 .ONESHELL:
-dev-backend:
+backend:
 	# source /home/tom/git/home/monty_aws_fullstack/config.mk
 	FLASK_APP=./src/backend/flask_api/app.py BUCKET_NAME=$(AWS_CHUM_BUCKET) FLASK_ENV=development python -m flask run
 

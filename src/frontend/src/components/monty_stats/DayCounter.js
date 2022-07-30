@@ -57,10 +57,10 @@ class DayCounter extends Component {
 
                 <div className={classNames(classes.dayCounterWrapper)}>
                     <img className={classNames(classes.wreath)} src={'/images/wreath.png'} />
-                    <div className={classNames(classes.dayCounter)}>{chumps[0].streak}</div>
+                    <div className={classNames(classes.dayCounter)}>{chumps.streak}</div>
                 </div>
 
-                <div className={classNames(classes.commonBigText)}>As of {format(chumps[0].parsedDate, 'do LLLL yyyy')}</div>
+                <div className={classNames(classes.commonBigText)}>As of {format(chumps.parsedDate, 'do LLLL yyyy')}</div>
             </div>
         )
     }
