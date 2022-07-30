@@ -3,6 +3,7 @@ name: update_current_streak
 on:
   schedule:
     - cron: '0 17 * * *' # runs daily at 5PM UTC, ~3AM Melbourne
+  workflow_dispatch
 
 jobs:
   build:
