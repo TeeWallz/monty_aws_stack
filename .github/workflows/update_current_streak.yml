@@ -1,4 +1,4 @@
-name: scraper-san-juan-gobierno
+name: update_current_streak
 
 on:
   schedule:
