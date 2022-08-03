@@ -105,7 +105,7 @@ function ChumpHistory(props) {
                             {cell}
                         </div>
                         <div className={classNames(classes.thanksText)}>
-                            {chumps[row.idx].thanks}
+                            {row.thanks}
                         </div>
                     </div>
                 )
@@ -256,9 +256,10 @@ function ChumpHistory(props) {
             date_aus_string: chumps[i].date_aus_string,
             idx: chumps[i].idx,
             date: chumps[i].date,
-            name: chumps[i].chumps.name,
-            urlText: chumps[i].chumps.url,
-            url: chumps[i].chumps.url,
+            thanks: chumps[i].thanks,
+            name: chumps[i].name,
+            urlText: chumps[i].url,
+            url: chumps[i].url,
             streak: chumps[i].streak,
             streak_max_proportion: chumps[i].streak_max_proportion,
             streak_yeet: [chumps[i].streak, chumps[i].streak_max_proportion],

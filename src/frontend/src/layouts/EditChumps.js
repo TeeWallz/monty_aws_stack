@@ -55,7 +55,7 @@ const new_bout_modes = {
     confirm_date: "confirm_date",
 }
 
-class FrontPage extends Component {
+class EditChumpsLayout extends Component {
     constructor(props) {
         super(props);
         console.log(props)
@@ -68,7 +68,7 @@ class FrontPage extends Component {
             chumps_array: props.props.chumps,
             chumps_dict: chumps_dict,
             chumps_changes: {},
-            selectedDate: props.props.chumps.date,
+            selectedDate: props.props.chumps[0].date,
             new_bout_mode: new_bout_modes.new_bout,
             new_date: ''
         }
@@ -100,6 +100,7 @@ class FrontPage extends Component {
     }
 
     getFieldValue = (date, field) => {
+        let kek = 1;
         // Assume no change at first
         let return_obj = { 'modified': false, value: this.state.chumps_dict[date][field] }
 
@@ -195,6 +196,12 @@ class FrontPage extends Component {
         }
     }
 
+    onCancelButtonClick = () => {
+        this.setState({
+            new_bout_mode: new_bout_modes.new_bout
+        });
+    }
+
     onConfirmDateChange = (e) => {
         this.setState({
             new_date: e.target.value
@@ -211,6 +218,7 @@ class FrontPage extends Component {
             return (
                 <>
                     <button type="button" class="btn btn-primary float-left" style={{ 'marginLeft': '0.5rem', 'marginTop': '-4px', }} onClick={this.onNewBoutButtonClick} >Confirm Date</button>
+                    <button type="button" class="btn btn-danger float-left" style={{ 'marginLeft': '0.5rem', 'marginTop': '-4px', }} onClick={this.onCancelButtonClick} >Cancel</button>
                     <input type="date" class="form-control" name="bout_date"
                         access="false" id="date-1658316014847" required="required"
                         aria-required="true" value={this.state.new_date}
@@ -241,7 +249,7 @@ class FrontPage extends Component {
                         <div className={classNames(classes.flex_item1)}>
                             <select name="bouts" size="20" class="form-control"
                                 onChange={this.onBoutListClick}
-                                defaultValue={this.props.props.chumps.date}
+                                defaultValue={this.props.props.chumps[0].date}
                                 value={this.state.selectedDate}
                             >
                                 {
@@ -306,7 +314,7 @@ class FrontPage extends Component {
     }
 }
 
-FrontPage.propTypes = {
+EditChumpsLayout.propTypes = {
     classes: PropTypes.object.isRequired
 };
 
@@ -319,4 +327,4 @@ const mapDispatchToProps = dispatch => ({
 
 const combinedStyles = combineStyles(frontPageStyle, commonStyle);
 
-export default withStyles(combinedStyles)(FrontPage)
+export default withStyles(combinedStyles)(EditChumpsLayout)

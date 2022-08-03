@@ -6,7 +6,12 @@ import Chumps from "./chumps";
 function boutsByYearWeek(){
     let chumps = Chumps()
 
-    const startYear = getYear(new Date(Math.min(...chumps.map(e => new Date(e.parsedDate)))));
+    // const startYear = getYear(new Date(Math.min(...chumps.map(e => new Date(e.parsedDate)))));
+    const startYear = Math.min.apply(Math, chumps.map(function(bout) { return bout.date_year; }))
+
+
+
+
     const startDate = new Date(startYear, 0, 6);
     const endDate = new Date(); //today
     const endWeekNumber = getWeek(endDate)
@@ -31,7 +36,7 @@ function boutsByYearWeek(){
 
     // Load bouts into out skeleton
     for(const bout of chumps){
-        boutData[getYear(bout.parsedDate)][getWeek(bout.parsedDate)] = bout;
+        boutData[bout.date_year][bout.date_week] = bout;
     }
     return boutData;
 

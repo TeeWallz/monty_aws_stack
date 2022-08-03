@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/core/styles';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.js';
 import ReactTooltip from "react-tooltip";
@@ -101,7 +101,7 @@ class HitBoxChart extends Component {
 
         return (
             <div style={localStyle.popupBox}>
-                <img src={ass.chumps.image} style={{width: '7em'}}/>
+                <img src={ass.chumps.image} style={{ width: '7em' }} />
                 <div>{ass.date}</div>
                 <div>{ass.chumps.name}</div>
             </div>
@@ -117,8 +117,8 @@ class HitBoxChart extends Component {
 
     render() {
 
-        const {classes} = this.props;
-        const {lightbox} = this.props;
+        const { classes } = this.props;
+        const { lightbox } = this.props;
 
         const bouts = boutsByYearWeek();
         const years = Object.keys(bouts).reverse();
@@ -134,23 +134,25 @@ class HitBoxChart extends Component {
                 <div className={classes.hitList}>
                     {
                         Object.keys(bouts[year]).map(elemWeek => (
+                            () => {
+                                console.log(year)
+                                return (
+                                    <div className={classes.hitList}>
+                                        {/*<div onClick={() => lightbox.openMe(year, elemWeek)}*/}
+                                        <div onClick={() => this.props.setLightboxData({ lightboxIsOpen: true, key: [year, elemWeek] })}
+                                            data-tip={year + "/" + elemWeek} data-for={bouts[year][elemWeek].chumps.length > 0 ? 'registerTip' : ''} className={
+                                                classNames(classes.hitBox, {
+                                                    [classes.hitBoxDoubleKill]: bouts[year][elemWeek].chumps.length > 1,
+                                                    [classes.hitBoxHit]: bouts[year][elemWeek].chumps.length === 1,
+                                                    [classes.hitBoxSafe]: bouts[year][elemWeek].chumps.length === 0
+                                                })
 
-
-                            <div className={classes.hitList}>
-                                {/*<div onClick={() => lightbox.openMe(year, elemWeek)}*/}
-                                <div onClick={() => this.props.setLightboxData({lightboxIsOpen: true, key: [year, elemWeek]})}
-                                    data-tip={year + "/" + elemWeek} data-for={bouts[year][elemWeek].chumps.length > 0 ? 'registerTip' : ''} className={
-                                        classNames(classes.hitBox, {
-                                            [classes.hitBoxDoubleKill]: bouts[year][elemWeek].chumps.length > 1,
-                                            [classes.hitBoxHit]: bouts[year][elemWeek].chumps.length === 1,
-                                            [classes.hitBoxSafe]: bouts[year][elemWeek].chumps.length === 0
-                                        })
-
-                                    }>
-                                    {bouts[year][elemWeek].length}
-                                </div>
-                            </div>
-
+                                            }>
+                                            {bouts[year][elemWeek].length}
+                                        </div>
+                                    </div>
+                                )
+                            }
 
                         ))
                     }

@@ -13,7 +13,7 @@ on:
         description: 'Test scenario tags'  
 
 jobs:
-  build:
+  update_streak:
     runs-on: ubuntu-latest
     steps:
 
@@ -25,16 +25,7 @@ jobs:
         with:
           python-version: '3.7.7' # install the python version needed
           
-      # - name: install python packages
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     pip install -r requirements.txt
-          
       - name: execute py script # run sj-gobierno.py to get the latest data
-        # env: 
-        #   EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
-        #   EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
-        #   EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
         run: python src/utilities/update_latest_streak_days.py
           
       - name: commit files

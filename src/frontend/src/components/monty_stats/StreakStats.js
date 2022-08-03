@@ -78,7 +78,7 @@ class StreakStats extends Component {
         const averageStreak = (streakArray.reduce((a, b) => a + b, 0) / chumps.length).toFixed(2);
         const stdDev = getStandardDeviation(streakArray).toFixed(2);
         const medianStreak = median(streakArray).toFixed(2);
-        const streakStatus = currentStatus(chumps.streak, medianStreak);
+        const streakStatus = currentStatus(chumps[0].streak, medianStreak);
         const setSkewness = skewness(streakArray).toFixed(2);
 
         return (
@@ -91,8 +91,8 @@ class StreakStats extends Component {
                 <div >
                     <Table className={classes.commonRegularText}>
                         <tbody>
-                            <tr><td className={classNames(classes.textAlignRight)}>Days Since Last:</td><td>{chumps.streak} {(chumps.streak == 1)? "day" : "days"}</td></tr>
-                            <tr><td className={classNames(classes.textAlignRight)}>Last bout date:</td><td>{format(chumps.parsedDate, 'dd/MM/yyyy')}</td></tr>
+                            <tr><td className={classNames(classes.textAlignRight)}>Days Since Last:</td><td>{chumps[0].streak} {(chumps.streak == 1)? "day" : "days"}</td></tr>
+                            <tr><td className={classNames(classes.textAlignRight)}>Last bout date:</td><td>{chumps[0].date_aus_string}</td></tr>
                             <tr><td className={classNames(classes.textAlignRight)}>Current Status:</td><td>{streakStatus}</td></tr>
                             <tr><td></td><td></td></tr>
                             <tr><td className={classNames(classes.textAlignRight)}>Average Streak:</td><td>{averageStreak} days</td></tr>

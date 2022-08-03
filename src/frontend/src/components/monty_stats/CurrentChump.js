@@ -88,7 +88,7 @@ class CurrentChump extends Component {
     render() {
         const { classes } = this.props;
         const chumps = Chumps()
-        let extension = chumps.image.split('.').pop();
+        let extension = chumps[0].image.split('.').pop();
         let my_image = (<></>)
 
 
@@ -99,7 +99,7 @@ class CurrentChump extends Component {
             my_image = (
                 <>
                     <video width="250" height="320" autoPlay muted loop>
-                        <source src={chumps.image} type="video/webm" />
+                        <source src={chumps[0].image} type="video/webm" />
                         Your browser does not support the video tag.
                     </video>
                 </>
@@ -107,7 +107,7 @@ class CurrentChump extends Component {
         }
         else {
             my_image = (
-                <img className={classes.chumpImage} src={chumps.image} />
+                <img className={classes.chumpImage} src={chumps[0].image} />
             )
         }
 
@@ -133,7 +133,7 @@ class CurrentChump extends Component {
 
                 </div>
                 <div className={classNames(classes.chumpName, classes.commonBigText)}>
-                    <a href={chumps.chumps.url} target="_blank" >{chumps.chumps.name}</a>
+                    <a href={chumps[0].url} target="_blank" >{chumps[0].name}</a>
                 </div>
 
 
